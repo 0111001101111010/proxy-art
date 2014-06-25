@@ -7,12 +7,10 @@ var cors = require('cors');
 var app = express();
 
 var parser = new xml2js.Parser();
-var mongoose = require('mongoose');
+
+var Exhibits = require('./model/exhibit');
+
 app.use(cors());
-
-
-var Art = require('./model/exhibit.js');
-
 
 app.get('/', function(req, res){
   res.redirect(301, '/exhibits');
@@ -47,22 +45,7 @@ app.get('/pretty', function(req, res){
     longitude: DS.attr('number'),
 */
 app.get('/exhibits', cors(), function(req, res){
-  request('http://www.norfolkva.gov/cultural_affairs/public_art_downtown.xml',
-    function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var obj = [];
-        parser.parseString(body, function (err, result) {
-        _.each(result.parks.parkz, function (data) {
-          obj.push(data.$);
-        });
-          res.set('Content-Type', 'application/json');
-          res.send(obj);
-        });
-      }
-      else {
-        res.send(404,"Not found");
-      }
-    });
+
 });
 
 app.get('/exhibits/:id', cors(), function(req, res){

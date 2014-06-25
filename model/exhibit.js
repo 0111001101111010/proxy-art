@@ -1,23 +1,11 @@
-var fs = require('fs');
-var xml2js = require('xml2js');
-var request = require('request');
-var express = require('express');
-var _ = require('lodash');
-var cors = require('cors');
-var app = express();
+var mongoose = require("mongoose");
+var Schema = mongoose.Schema;
 
-var parser = new xml2js.Parser();
+var uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/exhibits';
 
-var mongoose = require('mongoose');
-
-var uristring =
-process.env.MONGOLAB_URI ||
-process.env.MONGOHQ_URL ||
-'mongodb://localhost/art';
-
-mongoose.connect(uristring);
-
-var Exhibit = mongoose.model('Exhibit', {
+var db = mongoose.createConnection(uristring);
+var ExhibitSchema = new Schema( {
+    "_id": Number,
     "id": { type: Number, unique: true },
     "title": String,
     "longitude": Number,
@@ -27,4 +15,26 @@ var Exhibit = mongoose.model('Exhibit', {
     "url": String,
     "imageurl": String,
     "fullimage": String
+});
+
+  var Exhibit = mongoose.model('exhibits', ExhibitSchema,'exhibits');
+
+db.once('open', function (){
+    //
+    // Exhibit.find({},function(err, exhibits) {
+    //   console.log(exhibits);
+    //   });
+    //
+    // Exhibit.findOne('title', function (err, animals) {
+    //   console.log(animals);
+    // });
+    // console.log(Exhibit.model('exhibits').find({}));
+    //
+    db.model('exhibits', ExhibitSchema,'exhibits');
+    console.log('default conn models:', mongoose.modelNames()); // -> []
+    console.log('custom  conn models:', db.modelNames());
+    db.model('exhibits').find(function(err, obj) {
+      console.log(obj);
+    });
+
 });
